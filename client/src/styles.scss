@@ -3,26 +3,22 @@
   flex-direction: column;
   max-width: 400px;
   margin: 0 auto;
+  padding: auto;
+  margin-left: 250px;
 }
 
-input[type="text"],
+h2 {
+  position: relative;
+  left: 23%;
+}
+
 input[type="email"],
-input[type="tel"],
-input[type="topic"],
-textarea,
-select,
-input[type="text"][name="phoneNumber"] {
+input[type="password"] {
   width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 0;
   border: 1px solid #ccc;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-}
-
-input[type="text"][name="replyEmail"] {
-  text-transform: uppercase;
+  border-radius: 4px;
 }
 
 nav {
@@ -54,4 +50,3 @@ nav {
   filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
   margin-left: -60px;
 }
-

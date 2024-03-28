@@ -5,21 +5,15 @@ const Login = () => {
   return (
     <div>
       <h2>
-        <center>Contactar</center>
+      Un placer verte por acá
       </h2>
 
       <form id="contactForm">
-        <label htmlFor="name">Nombre:</label>
-        <input type="text" id="name" name="name" required />
+        <label htmlFor="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required />
 
-        <label htmlFor="message">Mensaje:</label>
-        <textarea id="message" name="message" required></textarea>
-
-        <label htmlFor="contactType">Información de contacto:</label>
-        <select id="contactType" name="contactType">
-          <option value="phoneNumber" selected>Teléfono Celular</option>
-          <option value="replyEmail">Email</option>
-        </select>
+        <label htmlFor="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required/>
       </form>
     </div>
   );
