@@ -1,5 +1,5 @@
 import React from 'react'
-import User from "./user.png"
+import User from "../img/User.png"
 
 const Navbar = () => {
   return (
