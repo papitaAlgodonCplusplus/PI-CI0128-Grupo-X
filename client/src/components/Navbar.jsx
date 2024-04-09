@@ -6,16 +6,16 @@ const Navbar = () => {
       <nav>
         <div className="nav-container">
           <div className="nav-section">
-            <a href="#register">A</a>
+            <a href="http://localhost:3000/rooms">Rooms Administration</a>
           </div>
           <div className="nav-section">
-            <a href="#home">B</a>
+            <a href="http://localhost:3000/home">Home</a>
           </div>
           <div className="nav-section">
-            <a href="#about-us">C</a>
+            <a href="http://localhost:3000/login">Log In</a>
           </div>
           <div className="nav-section">
-            <a href="#about-us">D</a>
+            <a href="http://localhost:3000/register">Sign Up</a>
           </div>
           <div className="image-button">
             <a href="#user"><img src={User} alt="User Icon" /></a>

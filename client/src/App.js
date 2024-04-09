@@ -8,6 +8,7 @@ import Home from "./pages/Home"
 import Register from "./pages/Register"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
+import Rooms from "./pages/Rooms"
 
 const Layout = () => {
   return (
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/rooms",
+        element: <Rooms />,
       },
     ]
   },

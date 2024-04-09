@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom"
 import Star from "../img/Star.png"
 import Search from "../img/Search.png"
 import Filter from "../img/Filter.png"
-import Img1 from "../img/Img1.png"
 import Coupon from "../img/Coupon.png"
 import User from "../img/User.png"
 
@@ -112,12 +111,6 @@ const Home = () => {
     cardsContainer.insertAdjacentHTML('beforeend', newCardHTML);
   };
 
-  const [file, setFile] = useState(null);
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
   const [inputs, setInputs] = useState({
     name: "",
     desc: "",
@@ -197,58 +190,7 @@ const Home = () => {
     cardsContainer.style.gridAutoRows = 'auto';
     cardsContainer.style.gridAutoFlow = 'dense';
   }
-
-  const navigate = useNavigate()
-  const handleSubmit = async e => {
-    e.preventDefault()
-    if (!file){
-      showErrorDialog("An error occurred:", "Please upload an image");
-      return;
-    }
-    if (!inputs.name){
-      showErrorDialog("An error occurred:", "Please add a title");
-      return;
-    }
-    if (!inputs.desc){
-      showErrorDialog("An error occurred:", "Please add a description");
-      return;
-    }
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-      var filename = "";
-      try {
-        filename = await axios.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-      } catch (error) {
-        showErrorDialog("An error occurred:", error);
-      }
-
-      Object.entries(inputs).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      inputs.filename = filename;
-
-      await axios.post("/rooms/add_room", inputs)
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        const errorMessage = error.response.data;
-        showErrorDialog("An error occurred:", errorMessage);
-      } else {
-        console.log("Even here 2")
-        showErrorDialog("An error occurred:", error);
-      }
-    }
-
-    const filepath = "/upload/" + filename.data;
-    addCard(inputs.name, inputs.desc, filepath);
-    updateCardsContainer();
-  }
-
+ 
   const emptyCardContainer = () => {
     const cardsContainer = document.querySelector('.cards-container');
     cardsContainer.innerHTML = '';
@@ -308,52 +250,8 @@ const Home = () => {
     }
   }
 
-  const handleDelete = async e => {
-    e.preventDefault()
-    try {
-      const roomId = inputs.delete;
-      await axios.delete(`/rooms/delete${roomId}`);
-    } catch (error) {
-      showErrorDialog("An error occurred:", error);
-    }
-    try {
-      const res = await axios.get(`/rooms`);
-      setRooms(res.data);
-      const filenames = await axios.get(`/rooms/get_images_names`);
-      var i = 0;
-      emptyCardContainer();
-      res.data.forEach(room => {
-        if (i >= filenames.data.length) {
-          updateCardsContainer();
-          return;
-        }
-        const filepath = "/upload/" + filenames.data[i].filename;
-        addCard(room.title, room.description, filepath);
-        i++;
-      });
-      updateCardsContainer();
-      return;
-    } catch (error) {
-      showErrorDialog("An error occurred:", error);
-    }
-  }
-
   return (
     <div>
-      <div>
-        <input type="file" onChange={handleFileChange} />
-      </div>
-      <form id="myForm">
-        <label htmlFor="name">Name:</label><br />
-        <input type="text" id="name" name="name" onChange={handleChange} /><br />
-        <label htmlFor="delete">Delete:</label><br />
-        <input type="text" id="delete" name="delete" onChange={handleChange} /><br />
-        <label htmlFor="desc">Description:</label><br />
-        <textarea id="desc" name="desc" onChange={handleChange} ></textarea>
-        <button className="filterImg">
-          <img src={Filter} alt="Filter" id="filterImg" onClick={handleDelete} />
-        </button>
-      </form>
       <form>
         <div className="search-container">
           <input type="text" name="search" id="search" onChange={handleChange} placeholder="Enter your search query" />
@@ -361,7 +259,7 @@ const Home = () => {
             <img src={Search} alt="Search" id="searchImg" onClick={handleSearch} />
           </button>
           <button className="filterImg">
-            <img src={Filter} alt="Filter" id="filterImg" onClick={handleSubmit} />
+            <img src={Filter} alt="Filter" id="filterImg"/>
           </button>
         </div>
       </form>
