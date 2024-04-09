@@ -53,7 +53,7 @@ const Login = () => {
     e.preventDefault()
     try {
       await axios.post("/auth/login", inputs)
-      navigate("/")
+      navigate("/home")
     } catch (error) {
       if (error.response && error.response.status === 404) {
         const errorMessage = error.response.data;
