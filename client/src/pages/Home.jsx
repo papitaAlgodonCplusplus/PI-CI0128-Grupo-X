@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import '../styles.scss';
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
@@ -7,9 +7,10 @@ import Search from "../img/Search.png"
 import Filter from "../img/Filter.png"
 import Coupon from "../img/Coupon.png"
 import User from "../img/User.png"
+import { Context } from '../Context.js';
 
 const Home = () => {
-  const addCard = (title, description, filename) => {
+  const addCard = (title, description, filename, id) => {
     const cardsContainer = document.querySelector('.cards-container');
 
     const newCardHTML = `
@@ -98,10 +99,7 @@ const Home = () => {
           margin: 0;
           padding: 0;
           flex: 20%;">
-            <img src=${User} alt="Owner" style="
-            flex: 1;
-            width: 100%;
-            height: auto;"/>
+          <button id="room-details-button-${title}" style={{margin: "0%"}}>Details</button>
           </div>
         </div>
       </div>
@@ -109,6 +107,8 @@ const Home = () => {
   `;
 
     cardsContainer.insertAdjacentHTML('beforeend', newCardHTML);
+    const detailsButton = document.getElementById("room-details-button-" + title);
+    detailsButton.addEventListener('click', (e) => handleOpen(e, id));
   };
 
   const [inputs, setInputs] = useState({
@@ -156,14 +156,25 @@ const Home = () => {
     document.body.appendChild(overlay);
   }
 
+  const { changeLastRoomClickedID } = useContext(Context);
+
+  const navigate = useNavigate();
+  const handleOpen = async (e, id) => {
+    e.preventDefault();
+    changeLastRoomClickedID(id);
+    navigate("/details");
+  }
+
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get("/rooms");
+        console.log ("Rooms: ", res)
         setRooms(res.data)
-        const filenames = await axios.get(`/rooms/get_images_names`);
+        const filenames = await axios.get(`/files/retrieve_images`);
+        console.log ("Images: ", filenames)
         var i = 0;
         emptyCardContainer();
         res.data.forEach(room => {
@@ -172,7 +183,7 @@ const Home = () => {
             return;
           }
           const filepath = "/upload/" + filenames.data[i].filename;
-          addCard(room.title, room.description, filepath);
+          addCard(room.title, room.description, filepath, room.roomid);
           i++;
         });
         updateCardsContainer();
@@ -205,7 +216,7 @@ const Home = () => {
       try {
         const res = await axios.get("/rooms");
         setRooms(res.data)
-        const filenames = await axios.get(`/rooms/get_images_names`);
+        const filenames = await axios.get(`/files/retrieve_images`);
         var i = 0;
         emptyCardContainer();
         res.data.forEach(room => {
@@ -214,7 +225,7 @@ const Home = () => {
             return;
           }
           const filepath = "/upload/" + filenames.data[i].filename;
-          addCard(room.title, room.description, filepath);
+          addCard(room.title, room.description, filepath, room.roomid);
           i++;
         });
         updateCardsContainer();
@@ -224,10 +235,12 @@ const Home = () => {
       }
     } else {
       try {
-        const res = await axios.get(`/rooms/search${term}`);
+        const res = await axios.get(`/filters/search_by_title${term}`);
         setRooms(res.data);
-        const images = await axios.get(`/rooms/get_images`);
-        var i = 0;
+        console.log(res)
+        const images = await axios.get(`/files/retrieve_images`);
+        console.log(images)
+        i = 0;
         images.data = images.data.filter(image => {
           return res.data.some(resImage => resImage.image_id === image.imageid);
         });
@@ -239,7 +252,7 @@ const Home = () => {
             return;
           }
           const filepath = "/upload/" + images.data[i].filename;
-          addCard(room.title, room.description, filepath);
+          addCard(room.title, room.description, filepath, room.roomid);
           i++;
         });
         updateCardsContainer();

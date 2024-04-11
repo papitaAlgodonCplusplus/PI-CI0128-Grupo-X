@@ -42,6 +42,7 @@ const Register = () => {
     email: "",
     password: "",
     last_name: "",
+    password_confirm: "",
   })
 
   const [err, setError] = useState(null)
@@ -53,9 +54,20 @@ const Register = () => {
   }
 
   const handleSubmit = async e => {
-    const password = e.target.value;
-    const passwordRegEx = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inputs.email)) {
+      showErrorDialog("An error occurred:", "Please enter a valid email address.");
+      return;
+    }
 
+    const password = inputs.password;
+    const passwordRegEx = /^^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    if (inputs.password !== inputs.password_confirm){
+      showErrorDialog("An error occurred:", "Passwords don't match");
+      return;
+    }
+    console.log(password)
     if (passwordRegEx.test(password)) {
       e.preventDefault()
       try {
@@ -70,7 +82,8 @@ const Register = () => {
         }
       }
     } else {
-      showErrorDialog("An error occurred:", "Password must be at least 8 characters long and contain at least 1 number.");
+      showErrorDialog("An error occurred:", "Password must be minimum eight characters, have at least one letter and one number");
+      return;
     }
   }
 
@@ -93,13 +106,13 @@ const Register = () => {
         <input type="last_name" id="last_name" name="last_name" onChange={handleChange} required />
 
         <label style={{ marginTop: '20px' }}>Correo electrónico:</label>
-        <input type="email_reg" id="email_reg" name="email" onChange={handleChange} required />
+        <input type="email" id="email_reg" name="email" onChange={handleChange} required />
 
         <label style={{ marginTop: '20px' }}>Contraseña:</label>
         <input type="password" id="password_reg" name="password" className='password_reg' onChange={handleChange} required />
 
         <label style={{ marginLeft: '35%', position: 'absolute', marginTop: '-5.28%' }}>Confimar contraseña:</label>
-        <input type="password" id="password_confirm" name="password_confirm" className='password_confirm' required />
+        <input type="password" id="password_confirm" name="password_confirm" className='password_confirm' onChange={handleChange} required />
       </form>
 
       <div className="terms-box">

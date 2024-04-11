@@ -9,6 +9,8 @@ import Register from "./pages/Register"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Rooms from "./pages/Rooms"
+import Details from "./pages/Details"
+import { Provider } from './Context.js';
 
 const Layout = () => {
   return (
@@ -41,6 +43,10 @@ const router = createBrowserRouter([
         path: "/rooms",
         element: <Rooms />,
       },
+      {
+        path: "/details",
+        element: <Details />,
+      },
     ]
   },
 ]);
@@ -48,13 +54,15 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="app">
-      <div className="container">
-        <div>
-          <RouterProvider router={router} />
+    <Provider>
+      <div className="app">
+        <div className="container">
+          <div>
+            <RouterProvider router={router} />
+          </div>
         </div>
       </div>
-    </div>
+    </Provider>
   );
 }
 

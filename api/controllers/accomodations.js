@@ -2,6 +2,7 @@ import { db } from "../db.js";
 import multer from "multer";
 
 export const addRoom = (req, res) => {
+  console.log("queries 0/3")
   const qi = "INSERT INTO images(`filename`, `filepath`) VALUES (?)"
   const filepath = "client/public/upload/" + req.body.filename.data;
 
@@ -73,16 +74,17 @@ export const updateRooms = (req, res) => {
   });
 };
 
-export const updateImages = (req, res) => {
-  const q = 'SELECT filename FROM images';
+export const getImagesFilenames = (req, res) => {
+  const q = 'SELECT * FROM images';
   db.query(q, (err, result) => {
     if (err) {
-      return res.status(500).json({ message: 'Failed to fetch filenames from the database.' });
+      return res.status(500).json({ message: 'Failed to fetch rooms from the database.' });
     }
 
     return res.status(200).json(result);
   });
-};
+}
+
 export const searchImages = (req, res) => {
   const q = 'SELECT * FROM images';
   db.query(q, (err, result) => {
@@ -93,30 +95,19 @@ export const searchImages = (req, res) => {
     return res.status(200).json(result);
   });
 };
-export const searchRooms = (req, res) => {
-  const term = req.params.term.toLowerCase();
-  const q = `SELECT * FROM rooms WHERE LOWER(title) LIKE '%${term}%'`;
-
-  db.query(q, (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Failed to search rooms in the database.' });
-    }
-    return res.status(200).json(result);
-  });
-};
 
 export const deleteRoom = (req, res) => {
-  const roomId = req.params.roomId;
+  const roomID = req.params.roomID;
 
-  const getRoomImageIdQuery = "SELECT image_id FROM rooms WHERE roomid = ?";
+  const getRoomImageIDQuery = "SELECT image_id FROM rooms WHERE roomid = ?";
   const deleteImagesQuery = "DELETE FROM images WHERE imageid = ?";
 
-  db.query(getRoomImageIdQuery, [roomId], (err, roomData) => {
+  db.query(getRoomImageIDQuery, [roomID], (err, roomData) => {
     if (err) {
       return res.status(500).json("Error retrieving room data.");
     }
 
-    console.log(roomData, [roomId])
+    console.log(roomData, [roomID])
     if (roomData.length === 0) {
       return res.status(404).json("Room not found.");
     }
@@ -134,7 +125,7 @@ export const deleteRoom = (req, res) => {
 
   const q = "DELETE FROM rooms WHERE roomid = ?";
 
-  db.query(q, [roomId], (err, data) => {
+  db.query(q, [roomID], (err, data) => {
     if (err) {
       return res.status(500).json("Error.");
     }

@@ -1,7 +1,8 @@
 import express from "express";
 import roomsRoutes from "./routes/rooms.js"
-import userRoutes from "./routes/users.js"
+import fileRoutes from "./routes/files.js"
 import authRoutes from "./routes/auth.js"
+import filterRoutes from "./routes/filters.js"
 import path from "path";
 import cookieParser from "cookie-parser";
 import multer from "multer";
@@ -27,8 +28,9 @@ app.post("/api/upload", upload.single("image"), function (req, res) {
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api/rooms", roomsRoutes)
-app.use("/api/users", userRoutes)
+app.use("/api/files", fileRoutes)
 app.use("/api/auth", authRoutes)
+app.use("/api/filters", filterRoutes)
 
 app.listen(8800,()=>{
   console.log("Connected")

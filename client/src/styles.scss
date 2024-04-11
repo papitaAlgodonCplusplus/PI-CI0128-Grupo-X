@@ -568,6 +568,107 @@ button {
   margin-right: 10px;
 }
 
+.square-container-2 {
+  margin-bottom: 1%;
+  margin-left: 5%;
+  width: 90%;
+  height: 300px;
+  padding: 0%;
+  border: 2px solid #000;
+  box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.6);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.square-container-2-left p {
+  margin-top: 0%;
+  margin-left: 5%;
+}
+
+.square-container-2-left-item {
+  margin-bottom: 2%;
+  text-align: justify;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 9;
+  -webkit-box-orient: vertical;
+  max-height: 100%;
+  max-width: 90%;
+}
+
+.square-container-2-right-item {
+  margin-top: 4%;
+  margin-left: 15%;
+  position: inherit;
+  max-width: 70%;
+  height: auto;
+  border: 2px solid #000;
+}
+
+.square-container-3 {
+  margin-left: 5%;
+  width: 90%;
+  height: 150px;
+  padding: 0%;
+  border: 2px solid #000;
+  box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.6);
+}
+
+.square-container {
+  width: 90%;
+  height: 500px;
+  padding: 0%;
+  border: 2px solid #000;
+  box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.6);
+  margin-left: 5%;
+  margin-bottom: 1%;
+}
+
+.user-review {
+  text-align: justify;
+  max-width: 45%;
+  margin-left: 2%;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.square-container img {
+  border: 2px solid #000;
+}
+
+.label-container {
+  position: relative; 
+  padding: 1%;
+  width: 45%;
+  margin: 0%;
+  display: flex;
+}
+
+.details-image {
+  display: relative;
+  margin: 0%;
+  margin-left: 50%;
+  max-width: 570px;
+  max-height: 400px;
+  display: flex;
+}
+
+.labelPlus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 50px;
+  border: 2px solid #000000;
+  background-color: #e49aaa;
+  border-radius: 10px;
+  margin-right: 2%;
+  padding: 0%;
+}
+
 .delete-button {
   max-width: 100%;
   margin-left: auto;
@@ -605,6 +706,20 @@ button {
   margin: 0 auto;
 }
 
+.reservation-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 150px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 79%;
+}
 .form-modal {
   display: none;
   position: fixed;
@@ -624,6 +739,29 @@ button {
   margin: 0%;
   font-size: 35px;
   font-weight: bold;
+}
+
+.room-details-list {
+  position: absolute;
+  margin-top: 18%;
+  margin-left: 0%;
+}
+
+.room-details-list-2 {
+  position: absolute;
+  margin-top: 18%;
+  margin-left: 20%;
+}
+
+.room-text-details {
+  position: absolute;
+  max-width: 42%;
+  margin-left: 1%;
+  text-align: justify;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
 }
 
 .close:hover,

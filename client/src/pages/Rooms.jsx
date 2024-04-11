@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import '../styles.scss';
 import axios from "axios"
-import { Link, useNavigate } from "react-router-dom"
 import X from "../img/X.png"
 import Plus from "../img/Add.png"
 
@@ -80,13 +79,13 @@ const Rooms = () => {
     updateCardsContainer();
   }
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get("/rooms");
-        const filenames = await axios.get(`/rooms/get_images_names`);
+        const filenames = await axios.get(`/files/retrieve_images`);
+        console.log(filenames.data)
         var i = 0;
         emptyCardContainer();
         res.data.forEach(room => {
@@ -106,7 +105,7 @@ const Rooms = () => {
     };
 
     fetchData();
-  }, []);
+  });
 
   const handleDelete = async (e, id) => {
     e.preventDefault()
@@ -117,7 +116,7 @@ const Rooms = () => {
     }
     try {
       const res = await axios.get("/rooms");
-      const filenames = await axios.get(`/rooms/get_images_names`);
+      const filenames = await axios.get(`/files/retrieve_images`);
       var i = 0;
       emptyCardContainer();
       res.data.forEach(room => {
@@ -127,6 +126,7 @@ const Rooms = () => {
         }
         const filepath = "/upload/" + filenames.data[i].filename;
         addCard(room.title, room.description, filepath, room.roomid);
+        console.log("Added Card", i)
         i++;
       });
       updateCardsContainer();
@@ -213,7 +213,7 @@ const Rooms = () => {
       console.log("Rooms added successfully", res_add);
 
       const res = await axios.get("/rooms");
-      const filenames = await axios.get(`/rooms/get_images_names`);
+      const filenames = await axios.get(`/files/retrieve_images`);
       var i = 0;
       emptyCardContainer();
       res.data.forEach(room => {
@@ -224,6 +224,7 @@ const Rooms = () => {
         }
         const filepath = "/upload/" + filenames.data[i].filename;
         addCard(room.title, room.description, filepath, room.roomid);
+        console.log("Added Card", i)
         i++;
       });
       updateCardsContainer();
