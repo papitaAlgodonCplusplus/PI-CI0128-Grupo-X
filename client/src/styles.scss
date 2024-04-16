@@ -10,6 +10,7 @@
 #registerForm {
   display: block;
   padding: auto;
+  overflow-x: hidden;
 }
 
 #registerForm label {
@@ -93,6 +94,21 @@ input[type="last_name"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+.search-container-admin {
+  display: flex;
+  position: relative;
+  margin-left: 10%;
+  width: 80%;
+  padding: 0.5%;
+  padding-left: 3%;
+  padding-right: 3%;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #8adcf5, #3DB4D6);
+  border: 2px solid #000000;
+  border-radius: 15px;
 }
 
 .search-container {
@@ -196,7 +212,64 @@ input[id="search"] {
   -webkit-box-orient: vertical;
 }
 
-input[type="email"],
+.modal-disabled-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 150px;
+  height: auto;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 37%;
+  background-color: #cccccc;
+  color: #b6b6b6;
+}
+
+.disabled-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 150px;
+  height: auto;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 84%;
+  background-color: #cccccc;
+  color: #b6b6b6;
+}
+
+.payment-method-selection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1%;
+}
+
+.payment-method-selection-content {
+  display: flex;
+  align-items: center;
+  margin-right: 4%;
+}
+
+input[type="email-login"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="email"] {
+  width: 63%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 input[type="password"] {
   width: 100%;
   padding: 10px;
@@ -225,6 +298,46 @@ nav {
 .nav-section a {
   text-decoration: none;
   color: #333;
+}
+
+.register-window {
+  overflow-x: hidden;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  min-height: 74.9vh;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+footer {
+  background: linear-gradient(to right, #8adcf5, #3DB4D6);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  border: 1px solid #000000;
+  margin-top: auto;
+}
+
+.footer-container {
+  display: flex;
+}
+
+.footer-section {
+  flex: 1;
+  text-align: left;
+  padding: 16px;
+}
+
+.footer-section a {
+  text-decoration: none;
+  color: #000000;
 }
 
 .image-button img {
@@ -264,6 +377,30 @@ nav {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+}
+
+.success-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #2ff059;
+  border: 1px solid #84e294;
+  padding: 20px;
+  width: 400px;
+  z-index: 1001;
+}
+
+.warning-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fcffcc;
+  border: 1px solid #b4bd38;
+  padding: 20px;
+  width: 400px;
+  z-index: 1001;
 }
 
 .modal-dialog {
@@ -333,6 +470,57 @@ nav {
 .modal-description {
   color: #000000;
   margin-bottom: 20px;
+}
+
+.success-modal-close {
+  background-color: #176e25;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  float: right;
+}
+
+#filter-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#filter-button.active {
+  background-color: #dc3545;
+}
+
+.filter-modal {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.success-modal-close:hover {
+  background-color: #14d153;
+}
+
+.warning-modal-close {
+  background-color: #165a16;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 16px;
+  margin-right: 2%;
+  cursor: pointer;
+  float: right;
 }
 
 .modal-close {
@@ -471,6 +659,7 @@ button {
 }
 
 #myForm input[type="text"],
+input[type="number"],
 #myForm textarea {
   width: 20%;
   height: 25px;
@@ -534,6 +723,12 @@ button {
   border-radius: 15px;
 }
 
+.room_types {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .list-container {
   display: flex;
   flex-direction: column;
@@ -549,6 +744,17 @@ button {
   padding: 10px;
   margin-bottom: 10px;
   width: 80%;
+}
+
+.room_types-container h3 {
+  margin: 0%;
+  color: #ffffff;
+}
+
+.room_types-container p {
+  text-align: justify;
+  width: 90%;
+  color: #ffffff;
 }
 
 .list-container h3 {
@@ -640,7 +846,7 @@ button {
 }
 
 .label-container {
-  position: relative; 
+  position: relative;
   padding: 1%;
   width: 45%;
   margin: 0%;
@@ -675,7 +881,13 @@ button {
   cursor: pointer;
 }
 
-.reservations-title {
+.modify-button {
+  max-width: 100%;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.room_types-title {
   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
   font-family: 'Roboto', sans-serif;
   color: #000000;
@@ -689,6 +901,21 @@ button {
   color: #000000;
   font-size: 30px;
   font-weight: 100px;
+}
+
+.add-room-type-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 180px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
 }
 
 .add-room-button {
@@ -706,6 +933,67 @@ button {
   margin: 0 auto;
 }
 
+.add-service-button {
+  position: absolute;
+  font-family: 'Lato';
+  font-size: 18px;
+  width: 150px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 0.2%;
+  margin-left: 1%;
+}
+
+.pay-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 200px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 25%;
+}
+
+.modal-calendar-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 150px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 37%;
+}
+
+.calendar-button {
+  font-family: 'Lato';
+  font-size: 20px;
+  width: 150px;
+  height: auto;
+  background-color: rgb(71, 70, 70);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 3%;
+  margin-left: 84%;
+}
+
 .reservation-button {
   font-family: 'Lato';
   font-size: 20px;
@@ -720,6 +1008,7 @@ button {
   margin-top: 3%;
   margin-left: 79%;
 }
+
 .form-modal {
   display: none;
   position: fixed;
@@ -771,6 +1060,19 @@ button {
   cursor: pointer;
 }
 
+.calendar-modal-content {
+  background: linear-gradient(to right, #6ecab3, #23d49f);
+  background-size: cover;
+  padding: 1%;
+  padding-left: 7%;
+  background-position: center;
+  position: relative;
+  margin: 10% auto;
+  border: 1px solid #888;
+  border-radius: 20px;
+  width: 65%;
+}
+
 .form-modal-content {
   background: linear-gradient(to right, #6ecab3, #23d49f);
   background-size: cover;
@@ -782,4 +1084,194 @@ button {
   border-radius: 20px;
   width: 80%;
   overflow-x: hidden;
+}
+
+.fee-input {
+  width: 10%;
+  border-radius: 2px;
+  border: 1px solid #888;
+  padding: 1%;
+}
+
+.datePicker {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  background-color: white;
+  color: black;
+
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  background-color: black;
+  color: white;
+}
+
+.card-form {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  max-width: 400px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.card-form-group {
+  margin-bottom: 20px;
+}
+
+.card-form label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.cardnumber,
+.cardholder,
+.expiration,
+.pin {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.room_types_selector {
+  font-family: Arial, sans-serif;
+  color: #000;
+  width: 20%;
+  margin-bottom: 3%;
+  padding: 3px;
+  padding-left: 8%;
+  border: 1px solid #888;
+  border-radius: 10px;
+}
+
+.bank-form {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  max-width: 400px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.cash-form {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  max-width: 400px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+
+.bank-form-group {
+  margin-bottom: 20px;
+}
+
+.bank-form label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.cash-form label {
+  font-weight: bold;
+}
+
+.cash-form input[type="number"] {
+  width: 65%;
+  margin-left: 4%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.bank-form input[type="text"],
+.bank-form input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.services_selector {
+  position: relative;
+  outline: none;
+  cursor: pointer;
+
+  color: rgb(0, 0, 0);
+  background-color: rgb(238, 238, 238);
+  border: 2px solid rgb(94, 94, 94);
+
+  border-radius: 5px;
+  padding: 0px 10px;
+  margin-bottom: 5%;
+  margin-right: 9%;
+  width: 200px;
+  height: 40px;
+  box-shadow: 5px 8px 5px rgba(0, 0, 0, 0.8);
+
+  font-family: serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.badge {
+  outline: none;
+  cursor: pointer;
+
+  color: rgb(0, 0, 0);
+  background-color: rgb(238, 238, 238);
+  border: 2px solid rgb(94, 94, 94);
+
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 4%;
+  width: 200px;
+  height: 40px;
+  box-shadow: 5px 8px 5px rgba(0, 0, 0, 0.8);
+
+  font-family: serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.cash-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-left: 22%;
+  margin-bottom: 20px;
+}
+
+.cash-form-group select {
+  margin-bottom: 20px;
+}
+
+.cash-form-group label {
+  display: flex;
+  flex-direction: column;
+  margin-left: 22%;
+  margin-bottom: 20px;
 }

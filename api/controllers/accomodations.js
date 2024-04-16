@@ -1,6 +1,23 @@
 import { db } from "../db.js";
 import multer from "multer";
 
+export const addRoomType = (req, res) => {
+  const q = "INSERT INTO categories(`class_name`, `price`) VALUES (?, ?)";
+  const values = [
+    req.body.room_type_name,
+    req.body.room_type_price,
+  ];
+
+  db.query(q, values, (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.json(err);
+    } else {
+      return res.json(data);
+    }
+  });
+};
+
 export const addRoom = (req, res) => {
   console.log("queries 0/3")
   const qi = "INSERT INTO images(`filename`, `filepath`) VALUES (?)"
@@ -51,7 +68,7 @@ export const addRoom = (req, res) => {
       lastImageId,
       req.body.name,
       req.body.desc,
-      1
+      req.body.room_type
     ]
     db.query(q, [values], (err, data) => {
       if (err) {
@@ -63,11 +80,46 @@ export const addRoom = (req, res) => {
   })
 }
 
+export const updateRoomTypes = (req, res) => {
+  const q = 'SELECT * FROM categories';
+  db.query(q, (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch categories from the database.' });
+    }
+
+    return res.status(200).json(result);
+  });
+};
+
 export const updateRooms = (req, res) => {
   const q = 'SELECT * FROM rooms';
   db.query(q, (err, result) => {
     if (err) {
       return res.status(500).json({ message: 'Failed to fetch rooms from the database.' });
+    }
+
+    return res.status(200).json(result);
+  });
+};
+
+export const updateRoomsByID = (req, res) => {
+  const roomID = req.params.roomID;
+  const q = 'SELECT * FROM rooms WHERE roomid = ?';
+  db.query(q, [roomID], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch rooms from the database.' });
+    }
+
+    return res.status(200).json(result);
+  });
+};
+
+export const updateRoomTypesByID = (req, res) => {
+  const roomTypeID = req.params.roomTypeID;
+  const q = 'SELECT * FROM categories WHERE categoryid = ?';
+  db.query(q, [roomTypeID], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch categories from the database.' });
     }
 
     return res.status(200).json(result);
@@ -128,6 +180,19 @@ export const deleteRoom = (req, res) => {
   db.query(q, [roomID], (err, data) => {
     if (err) {
       return res.status(500).json("Error.");
+    }
+
+    return res.status(200);
+  });
+};
+
+export const deleteRoomType = (req, res) => {
+  const reservationID = req.params.reservationID;
+  const q = "DELETE FROM categories WHERE categoryid = ?";
+
+  db.query(q, [reservationID], (err, data) => {
+    if (err) {
+      return res.status(500).json("Error couldn't delete category.");
     }
 
     return res.status(200);

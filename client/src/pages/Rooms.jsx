@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect, useCallback } from 'react'
 import '../styles.scss';
 import axios from "axios"
 import X from "../img/X.png"
@@ -43,9 +44,36 @@ const Rooms = () => {
     search: "",
     delete: "",
     filename: "",
+    room_type: 0,
+    room_type_name: "",
+    room_type_price: 0,
   })
 
-  const addCard = (title, description, filename, id) => {
+  const addRoomType = (title, price, id) => {
+    const roomsTypeContainer = document.querySelector('.rooms_type-container');
+
+    const newRoomTypeHTML = `
+    <div class="list-item" style="margin-left: 28%; width: 40%">
+      <div>
+        <h3 style="color: white; 
+        word-wrap: break-word;
+        max-width: 240px">${title}</h3>
+        <p style="color: white; 
+        word-wrap: break-word;
+        max-width: 240px">Price: ${price}</p>
+      </div>
+        <button class="delete-button" id="delete-room_type-button-${title}">
+          <img src=${X} alt="X" id="XImg" style="width:40px; height:40px; background-color: transparent;"/>
+        </button>
+    </div>
+  `;
+
+    roomsTypeContainer.insertAdjacentHTML('beforeend', newRoomTypeHTML);
+    const deleteButton = document.getElementById("delete-room_type-button-" + title);
+    deleteButton.addEventListener('click', (e) => handleRoomTypeDelete(e, id));
+  };
+
+  const addCard = (title, description, room_type, filename, id) => {
     description = description.substring(0, 90);
     const cardsContainer = document.querySelector('.list-container');
 
@@ -53,8 +81,15 @@ const Rooms = () => {
     <div class="list-item">
       <img src="${filename}" alt="${filename}"/>
       <div>
-        <h3>${title}</h3>
-        <p>${description}</p>
+        <h3 style="
+        word-wrap: break-word;
+        max-width: 240px;">${title}</h3>
+        <h3 style="
+        word-wrap: break-word;
+        max-width: 240px;">Room Type: ${room_type}</h3>
+        <p style="
+        word-wrap: break-word;
+        max-width: 240px;">${description}</p>
       </div>
         <button class="delete-button" id="delete-room-button-${title}">
           <img src=${X} alt="X" id="XImg" style="width:40px; height:40px; background-color: transparent;"/>
@@ -66,6 +101,18 @@ const Rooms = () => {
     const deleteButton = document.getElementById("delete-room-button-" + title);
     deleteButton.addEventListener('click', (e) => handleDelete(e, id));
   };
+
+  function updateRoomTypesContainer() {
+    const cardsContainer = document.querySelector('.rooms_type-container');
+    cardsContainer.style.gridAutoRows = 'auto';
+    cardsContainer.style.gridAutoFlow = 'dense';
+  }
+
+  const emptyRoomTypesContainer = () => {
+    const cardsContainer = document.querySelector('.rooms_type-container');
+    cardsContainer.innerHTML = '';
+    updateCardsContainer();
+  }
 
   function updateCardsContainer() {
     const cardsContainer = document.querySelector('.list-container');
@@ -80,32 +127,55 @@ const Rooms = () => {
   }
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get("/rooms");
-        const filenames = await axios.get(`/files/retrieve_images`);
-        console.log(filenames.data)
-        var i = 0;
-        emptyCardContainer();
-        res.data.forEach(room => {
-          if (i >= filenames.data.length) {
-            updateCardsContainer();
-            return;
-          }
-          const filepath = "/upload/" + filenames.data[i].filename;
-          addCard(room.title, room.description, filepath, room.roomid);
-          i++;
-        });
-        updateCardsContainer();
-        return;
-      } catch (error) {
-        showErrorDialog("An error occurred:", error);
-      }
-    };
+  const [roomTypeOption, setRoomTypeOption] = useState('');
+  const handleRoomTypeChange = (e) => {
+    setRoomTypeOption(e.target.value);
+  };
 
-    fetchData();
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await axios.get('/rooms/room_types')
+      setRoomTypes(res.data);
+      setRoomTypeOption(res.data[0].categoryid);
+      emptyRoomTypesContainer();
+      res.data.forEach(room_type => {
+        addRoomType(room_type.class_name, room_type.price, room_type.categoryid);
+      });
+      updateRoomTypesContainer();
+      const res2 = await axios.get("/rooms");
+      const filenames = await axios.get(`/files/retrieve_images`);
+      var i = 0;
+      emptyCardContainer();
+      res2.data.forEach(room => {
+        if (i >= filenames.data.length) {
+          updateCardsContainer();
+          return;
+        }
+        const filepath = "/upload/" + filenames.data[i].filename;
+        addCard(room.title, room.description, res.data[room.type_of_room - 1].class_name, filepath, room.roomid);
+        console.log(room_types)
+        i++;
+      });
+      updateCardsContainer();
+      return;
+    } catch (error) {
+      showErrorDialog("An error occurred:", error);
+    }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleRoomTypeDelete = async (e, id) => {
+    e.preventDefault()
+    try {
+      await axios.delete(`/rooms/delete_room_type${id}`);
+    } catch (error) {
+      showErrorDialog("An error occurred:", error);
+    }
+    fetchData();
+  }
 
   const handleDelete = async (e, id) => {
     e.preventDefault()
@@ -114,26 +184,7 @@ const Rooms = () => {
     } catch (error) {
       showErrorDialog("An error occurred:", error);
     }
-    try {
-      const res = await axios.get("/rooms");
-      const filenames = await axios.get(`/files/retrieve_images`);
-      var i = 0;
-      emptyCardContainer();
-      res.data.forEach(room => {
-        if (i >= filenames.data.length) {
-          updateCardsContainer();
-          return;
-        }
-        const filepath = "/upload/" + filenames.data[i].filename;
-        addCard(room.title, room.description, filepath, room.roomid);
-        console.log("Added Card", i)
-        i++;
-      });
-      updateCardsContainer();
-      return;
-    } catch (error) {
-      showErrorDialog("An error occurred:", error);
-    }
+    fetchData();
   }
 
   const [file, setFile] = useState(null);
@@ -164,7 +215,7 @@ const Rooms = () => {
       const timer = setTimeout(() => {
         resolve(null);
       }, timeout);
-  
+
       axios.post(url, data)
         .then((response) => {
           clearTimeout(timer);
@@ -175,6 +226,31 @@ const Rooms = () => {
           resolve(null);
         });
     });
+  }
+
+  const handleRoomTypeSubmit = async e => {
+    e.preventDefault()
+    if (!inputs.room_type_name) {
+      showErrorDialog("An error occurred:", "Please add a room type name");
+      return;
+    }
+    if (!inputs.room_type_price) {
+      showErrorDialog("An error occurred:", "Please add a price");
+      return;
+    }
+    try {
+      await postDataWithTimeout("/rooms/add_room_type", inputs, 500);
+      fetchData();
+      closeRoomTypeModal();
+      return;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        const errorMessage = error.response.data;
+        showErrorDialog("An error occurred:", errorMessage);
+      } else {
+        showErrorDialog("An error occurred:", error);
+      }
+    }
   }
 
   const handleSubmit = async e => {
@@ -206,30 +282,12 @@ const Rooms = () => {
       });
 
       inputs.filename = filename;
-
-      console.log("Uploaded")
+      inputs.room_type = roomTypeOption;
 
       const res_add = await postDataWithTimeout("/rooms/add_room", inputs, 500);
       console.log("Rooms added successfully", res_add);
-
-      const res = await axios.get("/rooms");
-      const filenames = await axios.get(`/files/retrieve_images`);
-      var i = 0;
-      emptyCardContainer();
-      res.data.forEach(room => {
-        if (i >= filenames.data.length) {
-          updateCardsContainer();
-          window.location.reload();
-          return;
-        }
-        const filepath = "/upload/" + filenames.data[i].filename;
-        addCard(room.title, room.description, filepath, room.roomid);
-        console.log("Added Card", i)
-        i++;
-      });
-      updateCardsContainer();
-      console.log("Cards updated successfully");
-      window.location.reload();
+      fetchData();
+      closeModal()
       return;
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -241,6 +299,16 @@ const Rooms = () => {
     }
   }
 
+  function displayRoomTypeModal() {
+    var modal = document.getElementById("roomTypeModal");
+    modal.style.display = "block";
+  }
+
+  function closeRoomTypeModal() {
+    var modal = document.getElementById("roomTypeModal");
+    modal.style.display = "none";
+  }
+
   function displayModal() {
     var modal = document.getElementById("myFormModal");
     modal.style.display = "block";
@@ -250,12 +318,14 @@ const Rooms = () => {
     var modal = document.getElementById("myFormModal");
     modal.style.display = "none";
   }
+
   const handleChange = e => {
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const [room_types, setRoomTypes] = useState([]);
   return (
-    <div>
+    <div className='body'>
       <div id="myFormModal" className="form-modal">
         <div className="form-modal-content">
           <span className="close" onClick={closeModal}>&times;</span>
@@ -269,15 +339,39 @@ const Rooms = () => {
             <input type="text" id="name" name="name" onChange={handleChange} /><br />
             <label htmlFor="desc">Description</label><br />
             <textarea id="desc" name="desc" onChange={handleChange} ></textarea>
+            <label htmlFor="room_types_selector">Room Type</label><br />
+            <select name="room_types_selector" className="room_types_selector" id="room_types_selector_1"
+              onChange={handleRoomTypeChange} value={roomTypeOption} required>
+              {room_types.map(room_type => (
+                <option key={room_type.categoryid} value={room_type.categoryid}>{room_type.class_name}</option>
+              ))}
+            </select>
             <button className="Plus">
               <img src={Plus} alt="Plus" id="plusImg" onClick={handleSubmit} />
             </button>
           </form>
         </div>
       </div>
+      <div id="roomTypeModal" className="form-modal">
+        <div className="form-modal-content">
+          <span className="close" onClick={closeRoomTypeModal}>&times;</span>
+          <form id="myForm">
+            <label htmlFor="room_type_name">Room Type Name</label><br />
+            <input type="text" id="room_type_name" name="room_type_name" onChange={handleChange} /><br />
+            <label htmlFor="room_type_price">Room Type Price</label><br />
+            <input type="number" id="room_type_price" name="room_type_price" onChange={handleChange} /><br />
+            <button className="Plus">
+              <img src={Plus} alt="Plus" id="plusImg" onClick={handleRoomTypeSubmit} />
+            </button>
+          </form>
+        </div>
+      </div>
       <div className='admin-container'>
         <div>
-          <h1 className='reservations-title'><center>Reservations</center></h1>
+          <h1 className='room_types-title'><center>Room Types</center></h1>
+          <div className="rooms_type-container">
+          </div>
+          <button className="add-room-type-button" onClick={displayRoomTypeModal}><center>Add Room Type</center></button>
         </div>
         <div>
           <h1 className='rooms-title'><center>Rooms</center></h1>

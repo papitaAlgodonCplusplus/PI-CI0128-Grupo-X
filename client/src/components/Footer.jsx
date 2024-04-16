@@ -2,7 +2,13 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <div>Footer</div>
+      <footer>
+        <div className="footer-container">
+          <div className="footer-section">
+            <a href="http://localhost:3000/reservations_admin">Reservations Administration</a>
+          </div>
+        </div>
+      </footer>
   )
 }
 

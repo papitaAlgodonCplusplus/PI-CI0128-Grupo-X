@@ -2,39 +2,8 @@ import React, { useState } from 'react'
 import User from "../img/User.png"
 import "../styles.scss"
 import axios from "axios"
-import { Link, useNavigate } from "react-router-dom"
-
-function showErrorDialog(title, description) {
-  const overlay = document.createElement('div');
-  overlay.classList.add('modal-overlay');
-
-  const dialog = document.createElement('div');
-  dialog.classList.add('modal-dialog');
-
-  const titleElement = document.createElement('div');
-  titleElement.classList.add('modal-title');
-  titleElement.textContent = title;
-
-  const descriptionElement = document.createElement('div');
-  descriptionElement.classList.add('modal-description');
-  descriptionElement.textContent = description;
-  console.log(description)
-
-  const closeButton = document.createElement('button');
-  closeButton.classList.add('modal-close');
-  closeButton.textContent = 'Close';
-  closeButton.addEventListener('click', () => {
-    document.body.removeChild(overlay);
-  });
-
-  dialog.appendChild(titleElement);
-  dialog.appendChild(descriptionElement);
-  dialog.appendChild(closeButton);
-
-  overlay.appendChild(dialog);
-
-  document.body.appendChild(overlay);
-}
+import { useNavigate } from "react-router-dom"
+import { showErrorDialog } from '../Misc'
 
 const Register = () => {
   const [inputs, setInputs] = useState({
@@ -45,7 +14,7 @@ const Register = () => {
     password_confirm: "",
   })
 
-  const [err, setError] = useState(null)
+  const [err] = useState(null)
   const navigate = useNavigate()
 
   const handleChange = e => {
@@ -67,7 +36,7 @@ const Register = () => {
       showErrorDialog("An error occurred:", "Passwords don't match");
       return;
     }
-    console.log(password)
+    
     if (passwordRegEx.test(password)) {
       e.preventDefault()
       try {
@@ -78,7 +47,7 @@ const Register = () => {
           const errorMessage = error.response.data;
           showErrorDialog("An error occurred:", errorMessage);
         } else {
-          console.error("An error occurred:", error);
+          showErrorDialog("An error occurred:", error);
         }
       }
     } else {
@@ -88,7 +57,7 @@ const Register = () => {
   }
 
   return (
-    <div>
+    <div className='register-window'>
       <div className='credentials-container'>
         <a href='http://localhost:3000/login' className='not-selected'>Loguearse</a>
         <a href='http://localhost:3000/register' className='selected-credential'>Registrarse</a>
@@ -98,7 +67,7 @@ const Register = () => {
         <img src={User} alt="User Upload" />
       </div>
 
-      <form id="registerForm">
+      <form id="registerForm" style={{  overflowX: "hidden"}}>
         <label>Nombre:</label>
         <input type="name" id="name" name="name" onChange={handleChange} required />
 
