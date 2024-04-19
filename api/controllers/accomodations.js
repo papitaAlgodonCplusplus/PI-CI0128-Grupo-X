@@ -110,6 +110,7 @@ export const updateRoomsByID = (req, res) => {
       return res.status(500).json({ message: 'Failed to fetch rooms from the database.' });
     }
 
+    console.log("Fetched: ", result, roomID)
     return res.status(200).json(result);
   });
 };

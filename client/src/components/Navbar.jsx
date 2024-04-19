@@ -12,7 +12,7 @@ const Navbar = () => {
             <a href="http://localhost:3000/home">Home</a>
           </div>
           <div className="nav-section">
-            <a href="http://localhost:3000/login">Log In</a>
+            <a href="http://localhost:3000/">Log In</a>
           </div>
           <div className="nav-section">
             <a href="http://localhost:3000/amenities">Amenities Administration</a>

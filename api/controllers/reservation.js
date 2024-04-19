@@ -25,16 +25,16 @@ export const getReservationsByUserID = (req, res) => {
 }
 
 export const addReservation = (req, res) => {
-  const checkIn = new Date(req.body.check_in).toISOString().slice(0, 19).replace('T', ' ');
-  const checkOut = new Date(req.body.check_out).toISOString().slice(0, 19).replace('T', ' ');
+  const checkIn = req.body.check_in_date
+  const checkOut = req.body.check_out_date
 
   const q = "INSERT INTO reservations(`check_in`, `check_out`, `user_id`, `payment_id`, `id_room`) VALUES (?, ?, ?, ?, ?)";
   const values = [
     checkIn,
     checkOut,
     req.body.user_id,
-    req.body.paymentId,
-    req.body.id_room,
+    req.body.payment_id,
+    req.body.room_id,
   ];
 
   db.query(q, values, (err, data) => {

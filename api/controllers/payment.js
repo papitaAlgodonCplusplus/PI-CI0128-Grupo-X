@@ -16,7 +16,7 @@ export const addCardPayment = (req, res) => {
 export const addBankPayment = (req, res) => {
   const q = "INSERT INTO transaction(`bank`) VALUES (?)";
   const values = [
-    req.body.bank_name,
+    req.body.bankName,
   ];
   
   db.query(q, [values], (err, data) => {
@@ -54,7 +54,7 @@ export const addPayment = (req, res) => {
   const q = "INSERT INTO payments(`price`, `id_method`) VALUES (?)";
   const values = [
     req.body.price,
-    req.body.id_method,
+    req.body.paymentMethodId,
   ];
   
   db.query(q, [values], (err, data) => {

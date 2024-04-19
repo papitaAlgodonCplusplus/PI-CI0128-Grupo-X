@@ -12,6 +12,7 @@ const Register = () => {
     password: "",
     last_name: "",
     password_confirm: "",
+    rol: "client",
   })
 
   const [err] = useState(null)
@@ -41,7 +42,7 @@ const Register = () => {
       e.preventDefault()
       try {
         await axios.post("/auth/register", inputs)
-        navigate("/login")
+        navigate("/")
       } catch (error) {
         if (error.response && error.response.status === 409) {
           const errorMessage = error.response.data;
@@ -56,10 +57,15 @@ const Register = () => {
     }
   }
 
+  const handleCancel = e => {
+    navigate("/")
+    return;
+  }
+
   return (
     <div className='register-window'>
       <div className='credentials-container'>
-        <a href='http://localhost:3000/login' className='not-selected'>Loguearse</a>
+        <a href='http://localhost:3000/' className='not-selected'>Loguearse</a>
         <a href='http://localhost:3000/register' className='selected-credential'>Registrarse</a>
       </div>
 
@@ -90,7 +96,7 @@ const Register = () => {
       </div>
       <button type="submit" className='create' onClick={handleSubmit}>Crear cuenta</button>
       {err && <p>{err}</p>}
-      <button type="cancel">Cancelar</button>
+      <button type="cancel" onClick={handleCancel}>Cancelar</button>
     </div>
   )
 }

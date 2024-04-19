@@ -19,7 +19,6 @@ const Payment = () => {
   const [services, setServices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedService, setServiceOption] = useState('');
-  const [cardType, setCardType] = useState('');
 
   // Define an asynchronous function to fetch data
   const fetchAndSetData = async () => {
@@ -28,8 +27,10 @@ const Payment = () => {
       axios.get('/services').then(response => {
         // Set the services state with the fetched data
         setServices(response.data);
-        // Set the default service option
-        setServiceOption(response.data[0].service_name);
+        // Set the default service option if any
+        if (response.data[0]) {
+          setServiceOption(response.data[0].service_name);
+        }
       });
 
       // Fetch room details by room ID
@@ -117,6 +118,7 @@ const Payment = () => {
     changePaymentMethod(e.target.value);
   };
 
+  let cardType = "";
   const handleCardNumber = (e) => {
     let numericValue = e.target.value
     if (/\D/.test(e.target.value)) {
@@ -132,7 +134,7 @@ const Payment = () => {
     } else if (/^3[47]/.test(numericValue)) {
       newCardType = 'American Express';
     }
-    setCardType(newCardType)
+    cardType = newCardType;
   }
 
   const bankNameRef = useRef(null);
@@ -167,12 +169,12 @@ const Payment = () => {
 
     // If payment endpoint is determined
     if (paymentEndpoint !== '') {
-      // Make a POST request to the determined payment endpoint with payment data
-      await axios.post(paymentEndpoint, paymentData);
       // Make a POST request to add payment with payment data
       const paymentRes = await axios.post('/payments/add_payment', paymentData);
+      // Make a POST request to the determined payment endpoint with payment data
+      await axios.post(paymentEndpoint, paymentData);
       // Update payment ID with the received payment ID
-      paymentId = paymentRes.data.paymentId;
+      paymentId = paymentRes.data.payment_id;
     }
 
     const reservationRequestData = {
@@ -186,24 +188,26 @@ const Payment = () => {
     // Making a POST request to add reservation
     const reservationResponse = await axios.post("/reservations/add_reservation", reservationRequestData);
 
-    try {
-      let counter = 0;  // Counter to keep track of the number of services processed
-      // Iterating through each service asynchronously
-      services.map(async (service) => {
-        // Fetching service details
-        const serviceResponse = await axios.get(`/services/get_service/${service.service_name}`);
-        const serviceId = serviceResponse.data[0].service_id; // Extracting service ID from the response
-        // Making a POST request to add service to service log
-        await axios.post(`/services/add_to_service_log`, { service_id: serviceId, reservation_id: reservationResponse.data.insertId });
-        counter++;
-        // Checking if all services have been processed
-        if (counter === services.length) {
-          return Promise.resolve(); // Resolving the promise once all services are processed
-        }
-      });
-    } catch (error) {
-      showErrorDialog("Error occurred:", error, false, navigate);
-    }
+      try {
+        let counter = 0;  // Counter to keep track of the number of services processed
+        // Iterating through each service asynchronously
+        console.log("from", servicesList)
+        servicesList.map(async (service) => {
+          // Fetching service details
+          const serviceResponse = await axios.get(`/services/get_service${service}`);
+          console.log("NOOO", reservationResponse)
+          const serviceId = serviceResponse.data[0].serviceid; // Extracting service ID from the response
+          // Making a POST request to add service to service log
+          await axios.post(`/services/add_to_service_log`, { service_id: serviceId, reservation_id: reservationResponse.data.insertId });
+          counter++;
+          // Checking if all services have been processed
+          if (counter === servicesList.length) {
+            return Promise.resolve(); // Resolving the promise once all services are processed
+          }
+        });
+      } catch (error) {
+        showErrorDialog("Error occurred:", error, false, navigate);
+      }
     showSuccessDialog("Payment Approved!", "You'll receive an email with your reservation details soon.", navigate);
   };
 

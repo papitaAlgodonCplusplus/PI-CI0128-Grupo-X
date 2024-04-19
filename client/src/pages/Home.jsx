@@ -126,6 +126,7 @@ const Home = () => {
     `;
 
     // Append the new card to the cards container
+    cardsContainer = document.querySelector('.cards-container');
     cardsContainer.insertAdjacentHTML('beforeend', newCardHTML);
     const detailsButton = document.getElementById("room-details-button-" + title);
     detailsButton.addEventListener('click', (e) => handleOpenDetails(e, roomId));
@@ -146,6 +147,7 @@ const Home = () => {
   const fetchDataFromServer = async () => {
     // Fetch data from the server to display rooms
     try {
+      cardsContainer = document.querySelector('.cards-container');
       const roomsResponse = await axios.get("/rooms");
       const imageFilesResponse = await axios.get(`/files/retrieve_images`);
       let imageIndex = 0;
@@ -182,6 +184,7 @@ const Home = () => {
       return;
     } else {
       try {
+        cardsContainer = document.querySelector('.cards-container');
         // Retrieve rooms search results using Axios
         const searchResults = await axios.get(`/filters/search_by_title${searchTerm}`);
         // Retrieve image files using Axios
@@ -217,6 +220,7 @@ const Home = () => {
   };
 
   const handleFilterCalendarChange = async (newDatesRange, event) => {
+    cardsContainer = document.querySelector('.cards-container');
     // Prevent default form submission behavior
     event.preventDefault();
     // Update selected dates

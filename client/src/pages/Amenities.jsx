@@ -1,12 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import '../styles.scss';
 import axios from "axios";
 import X from "../img/X.png";
 import Plus from "../img/Add.png";
+import { AuthContext } from '../AuthContext.js';
+import { useNavigate } from 'react-router-dom';
 import { emptyContainer, updateContainer, showErrorDialog, postDataWithTimeout, deleteDataWithTimeout } from '../Misc';
 
 const Amenities = () => {
+  const navigate = useNavigate()
+  const { userRol } = useContext(AuthContext);
   // State for input fields
   const [inputs, setInputs] = useState({
     service_name: "", // Name of the amenity
@@ -35,6 +39,9 @@ const Amenities = () => {
 
   // Function to fetch services data from server
   const fetchData = async () => {
+    if (userRol !== "admin" && userRol !== "employee") {
+      return;
+    }
     const services_table = document.querySelector('.list-container');
     try {
       const res = await axios.get("/services");
@@ -112,7 +119,7 @@ const Amenities = () => {
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  return (
+  return (userRol === "admin" || userRol === "employee" ?
     <div className='body'>
       <div id="myFormModal" className="form-modal">
         <div className="form-modal-content">
@@ -140,7 +147,7 @@ const Amenities = () => {
         </div>
       </div>
     </div >
-  );
+    : <div>{showErrorDialog("Error: ", "You must login as admin or employee to access this page", true, navigate)}</div>);
 };
 
 export default Amenities;

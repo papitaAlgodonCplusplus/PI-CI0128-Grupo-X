@@ -13,7 +13,6 @@ export const searchByTitle = (req, res) => {
 };
 
 export const getRoomByID = (req, res) => {
- 
 };
 
 export const retireveRoomByID = (req, res) => {

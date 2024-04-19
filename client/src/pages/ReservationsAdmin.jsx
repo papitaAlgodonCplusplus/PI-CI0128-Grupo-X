@@ -8,48 +8,14 @@ import Wrench from "../img/Wrench.png"
 import 'react-calendar/dist/Calendar.css';
 import Calendar from 'react-calendar';
 import Search from "../img/Search.png";
+import { showErrorDialog, calculateNumberOfDays, emptyContainer, updateContainer, putDataWithTimeout, deleteDataWithTimeout } from '../Misc.js';
+import { useNavigate } from 'react-router-dom';
 
 const ReservationsAdmin = () => {
-  function showErrorDialog(title, description) {
-    const overlay = document.createElement('div');
-    overlay.classList.add('modal-overlay');
-
-    const dialog = document.createElement('div');
-    dialog.classList.add('modal-dialog');
-
-    const titleElement = document.createElement('div');
-    titleElement.classList.add('modal-title');
-    titleElement.textContent = title;
-
-    const descriptionElement = document.createElement('div');
-    descriptionElement.classList.add('modal-description');
-    descriptionElement.textContent = description;
-    console.log(description)
-
-    const closeButton = document.createElement('button');
-    closeButton.classList.add('modal-close');
-    closeButton.textContent = 'Close';
-    closeButton.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-    });
-
-    dialog.appendChild(titleElement);
-    dialog.appendChild(descriptionElement);
-    dialog.appendChild(closeButton);
-
-    overlay.appendChild(dialog);
-
-    document.body.appendChild(overlay);
-  }
-
-  function calculateNumberOfDays(checkInDate, checkOutDate) {
-    const checkInTime = new Date(checkInDate).getTime();
-    const checkOutTime = new Date(checkOutDate).getTime();
-    const differenceInMs = checkOutTime - checkInTime;
-    const daysDifference = Math.ceil(differenceInMs / (1000 * 3600 * 24));
-    return daysDifference;
-  }
-
+  const navigate = useNavigate()
+  const { userRol } = useContext(AuthContext);
+  const { userId } = useContext(AuthContext);
+  const [fetched, setFetched] = useState(false)
   const [inputs, setInputs] = useState({
     name: "",
     desc: "",
@@ -58,73 +24,77 @@ const ReservationsAdmin = () => {
     filename: "",
   })
 
-  const addReservation = (title, check_in, check_out, filename, price, id) => {
+  // Function to add a new reservation to the reservations container
+  const addReservation = (title, checkInDate, checkOutDate, imageFilename, price, reservationId) => {
+    // Selecting the reservations container element
     const reservationsContainer = document.querySelector('.list-container');
-
+    // Generating HTML for the new reservation item
     const newReservationHTML = `
-    <div class="list-item" style="width: 600px; padding: 1%; margin-left: 2%;">
-        <div style="display: flex; align-items: center;">
-            <img src="${filename}" alt="${filename}" style="height: 900px; max-width: 1000px; margin-right: 2%;" />
-            <div style="margin-left: 10px;">
-                <h3>${title}</h3>
-                <div style="display: flex; justify-content: space-between;">
-                    <div style="flex: 1;">
-                        <p style="max-width: 100%; display: inline-block; margin-bottom: 0%">Check In:</p>
-                        <p>${check_in}</p>
-                    </div>
-                    <div style="flex: 1; margin-left: 10px;">
-                        <p style="max-width: 100%; display: inline-block; margin-bottom: 0%">Check Out:</p>
-                        <p>${check_out}</p>
-                    </div>
-                </div>
-                <h3 style="position: absolute; width: 50%;">Price: </h3>
-                <p style="margin: 1.3%; margin-left: 25%;">${price}</p>
-            </div>
-        </div>
-        <button class="delete-button" id="delete-reservation-button-${id}" style="background-color: transparent; border: none; margin-top: -2%; position: absolute; margin-left: 41%">
-            <img src=${X} alt="X" id="XImg" style="width: 40px; height: 40px; background-color: transparent; margin: 0%;" />
-        </button>
-        <button class="modify-button" id="modify-reservation-button-${id}" style="background-color: transparent; border: none; margin-top: 6%; position: absolute; margin-left: 40.5%">
-            <img src=${Wrench} alt="Wrench" id="WrenchImg" style="width: 40px; height: 40px; background-color: transparent; margin-top: 0%;" />
-        </button>
-    </div>  
+  <div class="list-item" style="width: 600px; padding: 1%; margin-left: 2%;">
+      <div style="display: flex; align-items: center;">
+          <img src="${imageFilename}" alt="${imageFilename}" style="height: 900px; max-width: 1000px; margin-right: 2%;" />
+          <div style="margin-left: 10px;">
+              <h3>${title}</h3>
+              <div style="display: flex; justify-content: space-between;">
+                  <div style="flex: 1;">
+                      <p style="max-width: 100%; display: inline-block; margin-bottom: 0%">Check In:</p>
+                      <p>${checkInDate}</p>
+                  </div>
+                  <div style="flex: 1; margin-left: 10px;">
+                      <p style="max-width: 100%; display: inline-block; margin-bottom: 0%">Check Out:</p>
+                      <p>${checkOutDate}</p>
+                  </div>
+              </div>
+              <h3 style="position: absolute; width: 50%;">Price: </h3>
+              <p style="margin: 1.3%; margin-left: 25%;">${price}</p>
+          </div>
+      </div>
+      <button class="delete-button" id="delete-reservation-button-${reservationId}" style="background-color: transparent; border: none; margin-top: -2%; position: absolute; margin-left: 41%">
+          <img src=${X} alt="X" id="XImg" style="width: 40px; height: 40px; background-color: transparent; margin: 0%;" />
+      </button>
+      <button class="modify-button" id="modify-reservation-button-${reservationId}" style="background-color: transparent; border: none; margin-top: 6%; position: absolute; margin-left: 40.5%">
+          <img src=${Wrench} alt="Wrench" id="WrenchImg" style="width: 40px; height: 40px; background-color: transparent; margin-top: 0%;" />
+      </button>
+  </div>  
 `;
-
+    // Adding the new reservation HTML to the reservations container
     reservationsContainer.insertAdjacentHTML('beforeend', newReservationHTML);
-    const deleteButton = document.getElementById("delete-reservation-button-" + id);
-    deleteButton.addEventListener('click', (e) => handleDelete(e, id));
-    const modifyButton = document.getElementById("modify-reservation-button-" + id);
-    modifyButton.addEventListener('click', (e) => handleModify(e, id));
+    // Adding event listeners for delete and modify buttons
+    const deleteButton = document.getElementById("delete-reservation-button-" + reservationId);
+    deleteButton.addEventListener('click', (e) => handleDelete(e, reservationId));
+    const modifyButton = document.getElementById("modify-reservation-button-" + reservationId);
+    modifyButton.addEventListener('click', (e) => handleModify(e, reservationId));
   };
 
-  function updateReservationsContainer() {
+  // Function to fetch user reservations data
+  const fetchUserReservations = useCallback(async () => {
+    if (userRol !== "admin" && userRol !== "employee") {
+      return;
+    }
+    // Selecting the container element to display reservations
     const reservationsContainer = document.querySelector('.list-container');
-    reservationsContainer.style.gridAutoRows = 'auto';
-    reservationsContainer.style.gridAutoFlow = 'dense';
-  }
-
-  const emptyReservationContainer = () => {
-    const reservationsContainer = document.querySelector('.list-container');
-    reservationsContainer.innerHTML = '';
-    updateReservationsContainer()
-  }
-
-
-  const { userId } = useContext(AuthContext);
-  const [fetched, setFetched] = useState(false)
-  const fetchData = useCallback(async () => {
     try {
-      emptyReservationContainer()
-      const res = await axios.get(`/reservations/by_userID${userId}`);
-      for (const reservation of res.data) {
-        const checkIn = new Date(reservation.check_in).toISOString().slice(0, 19).replace('T', ' ');
-        const checkOut = new Date(reservation.check_out).toISOString().slice(0, 19).replace('T', ' ');
-        const res2 = await axios.get(`/rooms/by_roomID${reservation.id_room}`);
-        const image = await axios.get(`/files/get_image_by_id${res2.data[0].image_id}`)
-        const filepath = "/upload/" + image.data[0].filename;
-        const res3 = await axios.get(`/payments/payment_byPaymentID${reservation.payment_id}`);
-        addReservation(res2.data[0].title, checkIn, checkOut, filepath, res3.data[0].price, reservation.reservationid);
-        updateReservationsContainer()
+      // Clearing the reservations container
+      emptyContainer(reservationsContainer);
+      // Fetching reservations data for the current user
+      const userReservationsResponse = await axios.get(`/reservations/by_userID${userId}`);
+      // Iterating over each reservation
+      for (const reservation of userReservationsResponse.data) {
+        // Converting check-in and check-out dates to a readable format
+        const checkInDate = new Date(reservation.check_in).toISOString().slice(0, 19).replace('T', ' ');
+        const checkOutDate = new Date(reservation.check_out).toISOString().slice(0, 19).replace('T', ' ');
+        // Fetching room details for the reservation
+        const roomResponse = await axios.get(`/rooms/by_roomID${reservation.id_room}`);
+        // Fetching image details for the room
+        const imageResponse = await axios.get(`/files/get_image_by_id${roomResponse.data[0].image_id}`);
+        const imagePath = "/upload/" + imageResponse.data[0].filename;
+        // Fetching payment details for the reservation
+        const paymentResponse = await axios.get(`/payments/payment_byPaymentID${reservation.payment_id}`);
+        // Adding reservation to the UI
+        addReservation(roomResponse.data[0].title, checkInDate, checkOutDate, imagePath,
+          paymentResponse.data[0].price, reservation.reservationid);
+        // Updating the reservations container
+        updateContainer(reservationsContainer);
       }
       return;
     } catch (error) {
@@ -134,104 +104,96 @@ const ReservationsAdmin = () => {
 
   useEffect(() => {
     if (!fetched) {
-      fetchData();
+      fetchUserReservations();
       setFetched(true);
     }
-  }, [fetchData, fetched]);
+  }, [fetchUserReservations, fetched]);
 
-  const [roomID, setRoomID] = useState(null)
+  // State variable for room ID
+  const [selectedRoomID, setSelectedRoomID] = useState(null);
+
+  // Function to handle confirmation of reservation modification
   const handleModifyConfirm = async (e) => {
-    e.preventDefault()
+    e.preventDefault(); // Preventing default form submission behavior
     try {
-      const res2 = await axios.get(`/rooms/by_roomID${roomID}`);
-      const res3 = await axios.get(`/rooms/room_type_ByID${res2.data[0].type_of_room}`);
-      let new_price = (res3.data[0].price * (calculateNumberOfDays(date[0], date[1])));
-      const res4 = await axios.get(`/payments/payment_byPaymentID${reservation[0].payment_id}`);
-      const res5 = await axios.get(`services/get_sum${reservation[0].reservationid}`)
-      new_price = Math.floor(new_price + res5.data.totalServicePrice);
-      const old_price = Math.floor(res4.data[0].price);
-      if (new_price > old_price || new_price < old_price) {
-        showErrorDialog("Error: ", "Cannot select a range of dates greater or lesser than the original.")
+      // Fetching room details based on the selected room ID
+      const roomResponse = await axios.get(`/rooms/by_roomID${selectedRoomID}`);
+      // Fetching room type details for the selected room
+      const roomTypeResponse = await axios.get(`/rooms/room_type_ByID${roomResponse.data[0].type_of_room}`);
+      // Calculating new price based on the room type and selected dates
+      let newPrice = roomTypeResponse.data[0].price * calculateNumberOfDays(selectedDateRange[0],
+        selectedDateRange[1]);
+      // Fetching payment details for the reservation
+      const paymentResponse = await axios.get(`/payments/payment_byPaymentID${reservation[0].payment_id}`);
+      // Fetching total service price for the reservation
+      const servicePriceResponse = await axios.get(`services/get_sum${reservation[0].reservationid}`);
+      // Adding total service price to the new price
+      newPrice += servicePriceResponse.data.totalServicePrice;
+      // Rounding the new price
+      newPrice = Math.floor(newPrice);
+      // Getting the original price from payment details
+      const originalPrice = Math.floor(paymentResponse.data[0].price);
+      // Comparing the new price with the original price
+      console.log(newPrice, originalPrice)
+      if (Math.abs(originalPrice - newPrice) > 1 ) {
+        showErrorDialog("Error: ", "Cannot select a range of dates greater or lesser than the original.");
         return;
       }
-      const checkOutDate = new Date(date[1]);
-      checkOutDate.setDate(checkOutDate.getDate() - 1);
-      const req = {
-        check_in: date[0].toISOString().slice(0, 19).replace('T', ' '),
-        check_out: checkOutDate.toISOString().slice(0, 19).replace('T', ' '),
+      // Creating request object for updating the reservation
+      const request = {
+        check_in: selectedDateRange[0].toISOString().slice(0, 19).replace('T', ' '),
+        check_out: selectedDateRange[1].toISOString().slice(0, 19).replace('T', ' '),
         reservationID: reservation[0].reservationid,
-      }
-      putDataWithTimeout("/reservations/updateReservation", req)
-      closeModal()
-      setDate(null)
-      fetchData()
+      };
+      // Making a PUT request to update the reservation
+      putDataWithTimeout("/reservations/updateReservation", request);
+      // Closing the modal
+      closeModal();
+      // Resetting date state
+      setSelectedDateRange(null);
+      // Fetching user reservations to update UI
+      fetchUserReservations();
       return;
     } catch (error) {
       showErrorDialog("An error occurred:", error);
     }
-  }
+  };
 
-  const [date, setDate] = useState(null);
-  const handleModify = async (e, id) => {
-    e.preventDefault()
+  // State variable for selected date range
+  const [selectedDateRange, setSelectedDateRange] = useState(null);
+
+  // Function to handle modification of reservation
+  const handleModify = async (e, reservationId) => {
+    e.preventDefault(); // Preventing default form submission behavior
     try {
-      const response = await axios.get(`/reservations/get_reservation_by_id${id}`);
-      setRoomID(response.data[0].id_room)
-      axios.get(`/reservations/get_reservations_by_room_id${roomID}`)
-      setReservations(response.data)
-      displayModal(id)
+      // Fetching reservation details by ID
+      const reservationResponse = await axios.get(`/reservations/get_reservation_by_id${reservationId}`);
+      // Extracting room ID from reservation response
+      const roomID = reservationResponse.data[0].id_room;
+      // Setting the selected room ID state
+      setSelectedRoomID(roomID);
+      // Fetching reservations for the selected room ID
+      axios.get(`/reservations/get_reservations_by_room_id${roomID}`);
+      // Setting reservations state with reservation data
+      setReservations(reservationResponse.data);
+      // Displaying modal for reservation modification
+      displayModal(reservationId);
       return;
     } catch (error) {
+      // Displaying error dialog if an error occurs
       showErrorDialog("An error occurred:", error);
     }
-  }
+  };
 
   const handleDelete = async (e, id) => {
     e.preventDefault()
     try {
       await deleteDataWithTimeout(`/reservations/delete${id}`, 500);
-      fetchData();
-      console.log("Deleted")
+      fetchUserReservations();
       return;
     } catch (error) {
       showErrorDialog("An error occurred:", error);
     }
-  }
-
-  async function deleteDataWithTimeout(url, timeout) {
-    return new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        resolve(null);
-      }, timeout);
-
-      axios.delete(url)
-        .then((response) => {
-          clearTimeout(timer);
-          resolve(response);
-        })
-        .catch((error) => {
-          clearTimeout(timer);
-          resolve(null);
-        });
-    });
-  }
-
-  async function putDataWithTimeout(url, data, timeout) {
-    return new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        resolve(null);
-      }, timeout);
-
-      axios.put(url, data)
-        .then((response) => {
-          clearTimeout(timer);
-          resolve(response);
-        })
-        .catch((error) => {
-          clearTimeout(timer);
-          resolve(null);
-        });
-    });
   }
 
   const displayModal = async (id) => {
@@ -252,134 +214,162 @@ const ReservationsAdmin = () => {
 
   const [reservations, setReservations] = useState([]);
   function dateRangeCheck(showDialog) {
-    if (!date) {
+    if (!selectedDateRange) {
       return false;
     }
-
-    if (!date[1]) {
+    if (!selectedDateRange[1]) {
       return false;
     }
-
     for (const reservation of reservations) {
       const checkInDate = new Date(reservation.check_in);
       const checkOutDate = new Date(reservation.check_out);
-
-      if (date[1] >= checkInDate && date[0] <= checkOutDate) {
-        setDate(null);
+      if (selectedDateRange[1] >= checkInDate && selectedDateRange[0] <= checkOutDate) {
+        setSelectedDateRange(null);
         if (showDialog) {
           showErrorDialog("Error: ", "The chosen date range is already occupied, please select a new one.")
         }
         return false;
       }
     }
-
     return true;
   }
-
+  
   const [reservation, setReservation] = useState(new Date());
+
+  // Function to determine if a date should be disabled on the calendar tile
   const tileDisabled = ({ date }) => {
+    // Checking if there is a reservation
     if (reservation[0]) {
+      // Extracting check-in and check-out dates from the reservation
       const checkInDate = new Date(reservation[0].check_in).toISOString().slice(0, 19).replace('T', ' ');
       const checkOutDate = new Date(reservation[0].check_out).toISOString().slice(0, 19).replace('T', ' ');
+      // Checking if the date falls within the reservation period
       if (date >= new Date(checkInDate) && date <= new Date(checkOutDate)) {
-        return true;
+        return true; // Disabling the tile if the date is within the reservation period
       }
     }
-
-    if (roomID) {
-      for (const reservation of reservations) {
-        const checkInDate = new Date(reservation.check_in);
-        const checkOutDate = new Date(reservation.check_out);
-
+    // Checking if a room is selected and there are reservations
+    if (selectedRoomID && reservations.length > 0) {
+      // Iterating over each reservation to check if the date falls within any reservation period
+      for (const reservationItem of reservations) {
+        const checkInDate = new Date(reservationItem.check_in);
+        const checkOutDate = new Date(reservationItem.check_out);
+        // Checking if the date falls within the reservation period
         if (date >= checkInDate && date <= checkOutDate) {
-          return true;
+          return true; // Disabling the tile if the date is within any reservation period
         }
       }
     }
-
     const today = new Date();
+    // Disabling the tile if the date is before today
     return date < today;
   };
-
+  // Function to handle search for reservations by user email
   const handleSearch = async (e) => {
+    // Selecting the reservations container element
+    const reservationsContainer = document.querySelector('.list-container');
     e.preventDefault();
+    // Getting the email input value
     const email = inputs.search;
+    // If the email input is empty, return
     if (email === '') {
       return;
     } else {
       try {
-        emptyReservationContainer()
-        const user = await axios.get(`/auth/getUserID${email}`);
-        if (!user.data[0]) {
+        // Clearing the reservations container
+        emptyContainer(reservationsContainer);
+        // Fetching user ID based on the provided email
+        const userResponse = await axios.get(`/auth/getUserID${email}`);
+        // If no user is found, show error dialog and return
+        if (!userResponse.data[0]) {
           showErrorDialog("An error occurred:", "Invalid email");
           return;
         }
-        const res = await axios.get(`/reservations/by_userID${user.data[0].userid}`);
-        for (const reservation of res.data) {
-          const checkIn = new Date(reservation.check_in).toISOString().slice(0, 19).replace('T', ' ');
-          const checkOut = new Date(reservation.check_out).toISOString().slice(0, 19).replace('T', ' ');
-          const res2 = await axios.get(`/rooms/by_roomID${reservation.id_room}`);
-          const image = await axios.get(`/files/get_image_by_id${res2.data[0].image_id}`)
-          const filepath = "/upload/" + image.data[0].filename;
-          const res3 = await axios.get(`/payments/payment_byPaymentID${reservation.payment_id}`);
-          addReservation(res2.data[0].title, checkIn, checkOut, filepath, res3.data[0].price, reservation.reservationid);
-          updateReservationsContainer()
+        // Fetching reservations for the user ID
+        const reservationsResponse = await axios.get(`/reservations/by_userID${userResponse.data[0].userid}`);
+        // Iterating over each reservation
+        for (const reservation of reservationsResponse.data) {
+          // Converting check-in and check-out dates to a readable format
+          const checkInDate = new Date(reservation.check_in).toISOString().slice(0, 19).replace('T', ' ');
+          const checkOutDate = new Date(reservation.check_out).toISOString().slice(0, 19).replace('T', ' ');
+          // Fetching room details for the reservation
+          const roomResponse = await axios.get(`/rooms/by_roomID${reservation.id_room}`);
+          // Fetching image details for the room
+          const imageResponse = await axios.get(`/files/get_image_by_id${roomResponse.data[0].image_id}`);
+          const imagePath = "/upload/" + imageResponse.data[0].filename;
+          // Fetching payment details for the reservation
+          const paymentResponse = await axios.get(`/payments/payment_byPaymentID${reservation.payment_id}`);
+          // Adding reservation to the UI
+          addReservation(roomResponse.data[0].title, checkInDate, checkOutDate, imagePath, paymentResponse.data[0].price, reservation.reservationid);
+          // Updating the reservations container
+          updateContainer(reservationsContainer);
         }
         return;
       } catch (error) {
         showErrorDialog("An error occurred:", error);
       }
     }
-  }
+  };
 
-  return (
+  return ( userRol === "admin" || userRol === "employee" ?
     <div className='body'>
       <div>
         <div className='admin-container'>
           {(
+            // Calendar modal
             <div id="calendar-modal" className='form-modal'>
               <div className="calendar-modal-content">
                 <span className="close" onClick={closeModal}>&times;</span>
-                {date && date.length > 0 && dateRangeCheck(true) ? (
+                {/* Displaying selected date range if available */}
+                {selectedDateRange && selectedDateRange.length > 0 && dateRangeCheck(true) ? (
                   <div className='text-modal-calendar'>
-                    <label className='text-date'>Fecha llegada: {date[0].getDate()}/{date[0].getMonth() + 1}/{date[0].getFullYear()}</label>
-                    <label className='text-date'>Fecha salida:  {date[1].getDate()}/{date[1].getMonth() + 1}/{date[1].getFullYear()}</label>
+                    <label className='text-date'>Fecha llegada: {selectedDateRange[0].getDate()}/{selectedDateRange[0].getMonth() + 1}/{selectedDateRange[0].getFullYear()}</label>
+                    <label className='text-date'>Fecha salida:  {selectedDateRange[1].getDate()}/{selectedDateRange[1].getMonth() + 1}/{selectedDateRange[1].getFullYear()}</label>
                   </div>
                 ) : (
+                  // Displaying default date range if no selection
                   <div className='text-modal-calendar'>
                     <span className='text-date'>Fecha llegada: --/--/----</span>
                     <span className='text-date'>Fecha salida: --/--/----</span>
                   </div>
                 )}
+                {/* Calendar component */}
                 <Calendar className="modal-calendar" id="modal-calendar-1"
-                  value={date}
+                  value={selectedDateRange}
                   selectRange={true}
                   tileDisabled={tileDisabled}
-                  onChange={setDate}
+                  onChange={setSelectedDateRange}
                 />
-                <button className={`${!(date && date.length > 0 && dateRangeCheck(false)) ? 'modal-disabled-button' : 'modal-calendar-button'}`} onClick={handleModifyConfirm} disabled={!(date && date.length > 0 && dateRangeCheck(false))}>
+                {/* Button to confirm modification */}
+                <button className={`${!(selectedDateRange && selectedDateRange.length > 0 &&
+                  dateRangeCheck(false)) ? 'modal-disabled-button' : 'modal-calendar-button'}`}
+                  onClick={handleModifyConfirm} disabled={!(selectedDateRange && selectedDateRange.length > 0
+                    && dateRangeCheck(false))}>
                   <center>Confirm</center>
                 </button>
               </div>
             </div>
           )}
+          {/* Search container */}
           <div>
             <div className="search-container-admin">
-              <input type="text" name="search" id="search" onChange={handleChange} placeholder="Enter your search query" />
+              <input type="text" name="search" id="search" onChange={handleChange}
+                placeholder="Enter your search query" />
+              {/* Button to trigger search */}
               <button className="searchImg">
                 <img src={Search} alt="Search" id="searchImg" onClick={handleSearch} />
               </button>
             </div>
+            {/* Reservations title */}
             <h1 className='amenities-title'><center>Reservations</center></h1>
+            {/* Container for displaying reservations */}
             <div className="list-container">
             </div>
           </div>
         </div>
-      </div >
+      </div>
     </div>
-  );
+  : <div>{showErrorDialog("Error: ", "You must login as admin or employee to access this page", true, navigate)}</div>);
 };
-
-
 
 export default ReservationsAdmin;

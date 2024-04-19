@@ -52,7 +52,7 @@ const Login = () => {
     <div className='body'>
       <div className='credentials-container'>
         {/* Links for login and registration */}
-        <a href='http://localhost:3000/login' className='selected-credential'>Loguearse</a>
+        <a href='http://localhost:3000/' className='selected-credential'>Loguearse</a>
         <a href='http://localhost:3000/register' className='not-selected'>Registrarse</a>
       </div>
       <h2>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react'
 import '../styles.scss';
 import 'react-calendar/dist/Calendar.css';
@@ -6,6 +7,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import Calendar from 'react-calendar';
 import { Context } from '../Context.js';
+import { showErrorDialog } from '../Misc.js';
 
 const Reservation = () => {
   const [date, setDate] = useState(null);
@@ -14,58 +16,25 @@ const Reservation = () => {
   const [reservations, setReservations] = useState([]);
   const { lastRoomClickedID } = useContext(Context);
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        const response = await axios.get(`/reservations/get_reservations_by_room_id${lastRoomClickedID}`);
-        setReservations(response.data);
-      } catch (error) {
-        console.error('Error fetching reservations:', error);
-      }
-    };
+  const fetchReservations = async () => {
+    try {
+      const response = await axios.get(`/reservations/get_reservations_by_room_id${lastRoomClickedID}`);
+      setReservations(response.data);
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchReservations();
-  }, [lastRoomClickedID]);
+  }, []);
 
   const navigate = useNavigate()
   const handleReserve = async e => {
     e.preventDefault()
-    changeCheckInDate(date[0])
-    changeCheckOutDate(date[1])
+    changeCheckInDate(date[0].toISOString().slice(0, 19).replace('T', ' '))
+    changeCheckOutDate(date[1].toISOString().slice(0, 19).replace('T', ' '))
     navigate("/pay")
-  }
-
-  function showErrorDialog(title, description) {
-    const overlay = document.createElement('div');
-    overlay.classList.add('modal-overlay');
-
-    const dialog = document.createElement('div');
-    dialog.classList.add('modal-dialog');
-
-    const titleElement = document.createElement('div');
-    titleElement.classList.add('modal-title');
-    titleElement.textContent = title;
-
-    const descriptionElement = document.createElement('div');
-    descriptionElement.classList.add('modal-description');
-    descriptionElement.textContent = description;
-    console.log(description)
-
-    const closeButton = document.createElement('button');
-    closeButton.classList.add('modal-close');
-    closeButton.textContent = 'Close';
-    closeButton.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-    });
-
-    dialog.appendChild(titleElement);
-    dialog.appendChild(descriptionElement);
-    dialog.appendChild(closeButton);
-
-    overlay.appendChild(dialog);
-
-    document.body.appendChild(overlay);
-    return;
   }
 
   function dateRangeCheck(showDialog) {

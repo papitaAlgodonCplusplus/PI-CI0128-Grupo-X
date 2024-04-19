@@ -20,6 +20,19 @@ export const getEmail = (req, res) => {
   });
 };
 
+export const getUserByID = (req, res) => {
+  const userID = req.params.userID;
+  const q = 'SELECT * FROM users WHERE userid = ?';
+  db.query(q, [userID], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch user data from the database.' });
+    }
+
+    console.log("Returning: ", result, userID)
+    return res.status(200).json(result);
+  });
+}
+
 export const register = (req, res) => {
   // Check if the user already exists
   const q = "SELECT * FROM users WHERE email = ?";
@@ -32,12 +45,13 @@ export const register = (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
-    const q = "INSERT INTO users(`name`, `email`, `last_name`, `password`) VALUES (?)"
+    const q = "INSERT INTO users(`name`, `email`, `last_name`, `password`, `rol`) VALUES (?)"
     const values = [
       req.body.name,
       req.body.email,
       req.body.last_name,
       hash,
+      req.body.rol
     ]
     db.query(q, [values], (err, data) => {
       if (err) return res.json(err);
