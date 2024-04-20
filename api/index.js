@@ -9,6 +9,7 @@ import serviceRouter from "./routes/amenities.js"
 import path from "path";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import http from 'http';
 
 const app = express()
 
@@ -38,7 +39,4 @@ app.use("/api/reservations", reservationRoutes)
 app.use("/api/payments", paymentRouter)
 app.use("/api/services", serviceRouter)
 
-
-app.listen(8800,()=>{
-  console.log("Connected")
-})
+module.exports = app

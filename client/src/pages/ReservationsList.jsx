@@ -108,7 +108,6 @@ const ReservationsList = () => {
 
   // State variable for room ID
   const handleModifyConfirm = async (e) => {
-    const servicesContainer = document.querySelector('.list-container');
     // Preventing the default form submission behavior
     e.preventDefault();
 

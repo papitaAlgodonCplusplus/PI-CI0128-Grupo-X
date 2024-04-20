@@ -19,7 +19,6 @@ const Register = () => {
   const navigate = useNavigate()
 
   const handleChange = e => {
-    console.log(inputs)
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
@@ -33,11 +32,11 @@ const Register = () => {
     const password = inputs.password;
     const passwordRegEx = /^^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-    if (inputs.password !== inputs.password_confirm){
+    if (inputs.password !== inputs.password_confirm) {
       showErrorDialog("An error occurred:", "Passwords don't match");
       return;
     }
-    
+
     if (passwordRegEx.test(password)) {
       e.preventDefault()
       try {
@@ -73,20 +72,20 @@ const Register = () => {
         <img src={User} alt="User Upload" />
       </div>
 
-      <form id="registerForm" style={{  overflowX: "hidden"}}>
-        <label>Nombre:</label>
+      <form id="registerForm" style={{ overflowX: "hidden" }}>
+        <label htmlFor="name">Nombre:</label>
         <input type="name" id="name" name="name" onChange={handleChange} required />
 
-        <label style={{ marginLeft: '35%', position: 'absolute', marginTop: '-4.75%' }}>Apellidos:</label>
+        <label htmlFor="last_name" style={{ marginLeft: '35%', position: 'absolute', marginTop: '-4.75%' }}>Apellidos:</label>
         <input type="last_name" id="last_name" name="last_name" onChange={handleChange} required />
 
-        <label style={{ marginTop: '20px' }}>Correo electrónico:</label>
+        <label htmlFor="email_reg" style={{ marginTop: '20px' }}>Correo electrónico:</label>
         <input type="email" id="email_reg" name="email" onChange={handleChange} required />
 
-        <label style={{ marginTop: '20px' }}>Contraseña:</label>
+        <label htmlFor="password_reg" style={{ marginTop: '20px' }}>Contraseña:</label>
         <input type="password" id="password_reg" name="password" className='password_reg' onChange={handleChange} required />
 
-        <label style={{ marginLeft: '35%', position: 'absolute', marginTop: '-5.28%' }}>Confimar contraseña:</label>
+        <label htmlFor="password_confirm" style={{ marginLeft: '35%', position: 'absolute', marginTop: '-5.28%' }}>Confirmar contraseña:</label>
         <input type="password" id="password_confirm" name="password_confirm" className='password_confirm' onChange={handleChange} required />
       </form>
 

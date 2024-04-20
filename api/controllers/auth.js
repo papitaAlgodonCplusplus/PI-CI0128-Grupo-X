@@ -36,8 +36,7 @@ export const getUserByID = (req, res) => {
 export const register = (req, res) => {
   // Check if the user already exists
   const q = "SELECT * FROM users WHERE email = ?";
-
-  db.query(q, [req.body.email, req.body.name], (err, data) => {
+  db.query(q, [req.body.email], (err, data) => {
     if (err) return res.json(err);
     if (data.length) return res.status(409).json("User already exists!");
 
@@ -55,7 +54,7 @@ export const register = (req, res) => {
     ]
     db.query(q, [values], (err, data) => {
       if (err) return res.json(err);
-      return res.status(200).json("User has been created!");
+      return res.status(200).json({ message: "User has been created!" });
     })
   })
 }
@@ -79,6 +78,19 @@ export const login = (req, res) => {
     }).status(200).json(other)
   })
 }
+
+
+export const deleteUser = (req, res) => {
+  const q = "DELETE FROM users WHERE email = ?";
+
+  db.query(q, [req.params.email], (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Error couldn't delete user." });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully." });
+  });
+};
 
 export const logout = (req, res) => {
 
