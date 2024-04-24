@@ -37,7 +37,10 @@ export const register = (req, res) => {
   // Check if the user already exists
   const q = "SELECT * FROM users WHERE email = ?";
   db.query(q, [req.body.email], (err, data) => {
-    if (err) return res.json(err);
+    if (err) {
+      console.log(err)
+      return res.json(err);
+    }
     if (data.length) return res.status(409).json("User already exists!");
 
     // Hash the password and create the user

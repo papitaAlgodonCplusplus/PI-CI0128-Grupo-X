@@ -33,7 +33,7 @@ CREATE TABLE hotel.reservations (
     user_id INT,
     payment_id INT UNIQUE,
     FOREIGN KEY (user_id) REFERENCES hotel.users(userid),
-    FOREIGN KEY (payment_id) REFERENCES hotel.paymentspaymentsPRIMARY(paymentid)
+    FOREIGN KEY (payment_id) REFERENCES hotel.payments(paymentid)
 );
 
 CREATE TABLE hotel.rooms (
@@ -113,7 +113,7 @@ CREATE TABLE hotel.services_log (
 ALTER TABLE hotel.users
 ADD COLUMN rol VARCHAR(50);
 
-CREATE TABLE images (
+CREATE TABLE hotel.images (
     imageid INT AUTO_INCREMENT PRIMARY KEY,
     filename VARCHAR(255) NOT NULL,
     filepath VARCHAR(255) NOT NULL,
@@ -156,9 +156,6 @@ ALTER TABLE hotel.rooms
 DROP CONSTRAINT rooms_ibfk_1;
 
 ALTER TABLE hotel.rooms
-DROP CONSTRAINT rooms_ibfk_1;
-
-ALTER TABLE hotel.rooms
 DROP COLUMN type_of_room;
 
 ALTER TABLE hotel.rooms
@@ -169,15 +166,6 @@ ADD CONSTRAINT rooms_ibfk_1
 FOREIGN KEY (type_of_room)
 REFERENCES hotel.categories(categoryid);
 
-DELETE FROM hotel.categories;
-
-ALTER TABLE hotel.categories
-DROP COLUMN categoryid;
-
-ALTER TABLE hotel.categories
-ADD COLUMN categoryid INT PRIMARY KEY AUTO_INCREMENT;
-
-DROP TRIGGER IF EXISTS update_room_count;
 ALTER TABLE hotel.categories
 DROP COLUMN rooms_number;
 
@@ -186,20 +174,3 @@ DROP CONSTRAINT services_log_ibfk_1;
 
 ALTER TABLE hotel.services_log
 RENAME COLUMN reservationid TO reservation_id;
-
-ALTER TABLE hotel.services_log
-DROP CONSTRAINT services_log_ibfk_2;
-
-ALTER TABLE hotel.services_log
-MODIFY service_id INT;
-
-ALTER TABLE hotel.services_log
-DROP PRIMARY KEY;
-
-ALTER TABLE hotel.services_log
-DROP CONSTRAINT services_log_ibfk_2;
-
-ALTER TABLE hotel.services_log
-ADD CONSTRAINT services_log_ibfk_2
-FOREIGN KEY (service_id)
-REFERENCES hotel.services(serviceid);

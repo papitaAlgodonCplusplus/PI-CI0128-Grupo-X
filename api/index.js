@@ -39,4 +39,6 @@ app.use("/api/reservations", reservationRoutes)
 app.use("/api/payments", paymentRouter)
 app.use("/api/services", serviceRouter)
 
-module.exports = app
+app.listen(8800, () => {
+  console.log("Connected")
+})
