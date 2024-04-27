@@ -232,6 +232,7 @@ const Rooms = () => {
     }
   };
 
+  // Function that handles room type submition
   const handleRoomTypeSubmit = async e => {
     e.preventDefault()
     if (!inputs.room_type_name) {
