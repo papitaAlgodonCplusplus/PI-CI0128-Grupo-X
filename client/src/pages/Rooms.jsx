@@ -100,9 +100,9 @@ const Rooms = () => {
 
   // Function to fetch data and populate UI
   const fetchData = useCallback(async () => {
-    if (userRol !== "admin" && userRol !== "employee") {
-      return;
-    }
+    // if (userRol !== "admin" && userRol !== "employee") {
+    //   return;
+    // }
     // Selecting containers for room types and cards
     const roomTypesContainer = document.querySelector('.rooms_type-container');
     const cardsContainer = document.querySelector('.list-container');
@@ -342,7 +342,8 @@ const Rooms = () => {
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  return (userRol === "admin" || userRol === "employee" ?
+  // userRol === "admin" || userRol === "employee" ?
+  return (
     <div className='body'>
       {/* Form modal for adding rooms */}
       <div id="myFormModal" className="form-modal">
@@ -414,8 +415,8 @@ const Rooms = () => {
           <button className="add-room-button" onClick={displayModal}><center>Add Room</center></button>
         </div>
       </div>
-    </div >
-    : <div>{showErrorDialog("Error: ", "You must login as admin or employee to access this page", true, navigate)}</div>);
-};
+    </div > )
+    // : <div>{showErrorDialog("Error: ", "You must login as admin or employee to access this page", true, navigate)}</div>);
+    };
 
 export default Rooms;

@@ -174,3 +174,6 @@ DROP CONSTRAINT services_log_ibfk_1;
 
 ALTER TABLE hotel.services_log
 RENAME COLUMN reservationid TO reservation_id;
+
+SELECT * FROM hotel.users;
+INSERT INTO hotel.users(name, last_name, email, password, rol) VALUES ('ALEX', 'QUESADA', "alexquesada24@gmail.com", "$2a$10$aa2fg5WyfDgKLvOnWte89OwiImvhiUKxhnGBcZeXNHaGqZK01ijR2", "admin")
